@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="inventory_dbModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="brand">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="entry_date" Type="DateTime" />
+    <NavigationProperty Name="models" Relationship="Self.fk_brand" FromRole="brand" ToRole="models" />
+    <NavigationProperty Name="items" Relationship="Self.fk_brand_id" FromRole="brand" ToRole="items" />
+  </EntityType>
+  <EntityType Name="item">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="brand_id" Type="Int32" />
+    <Property Name="model_id" Type="Int32" />
+    <Property Name="name" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+    <Property Name="entry_date" Type="DateTime" />
+    <NavigationProperty Name="brand" Relationship="Self.fk_brand_id" FromRole="items" ToRole="brand" />
+    <NavigationProperty Name="model" Relationship="Self.fk_model" FromRole="items" ToRole="models" />
+  </EntityType>
+  <EntityType Name="model">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="brand_id" Type="Int32" />
+    <Property Name="name" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="entry_date" Type="DateTime" />
+    <NavigationProperty Name="brand" Relationship="Self.fk_brand" FromRole="models" ToRole="brand" />
+    <NavigationProperty Name="items" Relationship="Self.fk_model" FromRole="models" ToRole="items" />
+  </EntityType>
+  <Association Name="fk_brand">
+    <End Role="brand" Type="Self.brand" Multiplicity="0..1" />
+    <End Role="models" Type="Self.model" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="brand">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="models">
+        <PropertyRef Name="brand_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="fk_brand_id">
+    <End Role="brand" Type="Self.brand" Multiplicity="0..1" />
+    <End Role="items" Type="Self.item" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="brand">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="items">
+        <PropertyRef Name="brand_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="fk_model">
+    <End Role="models" Type="Self.model" Multiplicity="0..1" />
+    <End Role="items" Type="Self.item" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="models">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="items">
+        <PropertyRef Name="model_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="inventory_dbEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="brands" EntityType="Self.brand" />
+    <EntitySet Name="items" EntityType="Self.item" />
+    <EntitySet Name="models" EntityType="Self.model" />
+    <AssociationSet Name="fk_brand" Association="Self.fk_brand">
+      <End Role="brand" EntitySet="brands" />
+      <End Role="models" EntitySet="models" />
+    </AssociationSet>
+    <AssociationSet Name="fk_brand_id" Association="Self.fk_brand_id">
+      <End Role="brand" EntitySet="brands" />
+      <End Role="items" EntitySet="items" />
+    </AssociationSet>
+    <AssociationSet Name="fk_model" Association="Self.fk_model">
+      <End Role="models" EntitySet="models" />
+      <End Role="items" EntitySet="items" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>
